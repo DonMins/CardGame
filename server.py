@@ -85,6 +85,7 @@ class Server(object):
         except ValueError:
             raise RuntimeError(ERROR_ARGUMENTS)
 
+
     def exit(self):
         self.sock.close()
         for client in self.clients:
