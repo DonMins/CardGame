@@ -19,34 +19,48 @@ class EzChatUI(object):
         self.message_list = None
         self.scrollbar = None
         self.send_button = None
+        self.first_button = None
+        self.second_button = None
+        self.third_button = None
+        self.forth_button = None
+
 
     def show(self):
-        self.gui = tkinter.Tk()
-        self.gui.title(messagess.TITLE)
-        self.fill_frame()
-        self.gui.protocol(CLOSING_PROTOCOL,self.on_closing)
-        return self.input_dialogs()
+        self.gui = tkinter.Tk() #создали класс для пользования библиотекой
+        self.gui.title(messagess.TITLE)#заголовок
+        self.fill_frame()# наполняем наше окно
+        self.gui.protocol(CLOSING_PROTOCOL,self.on_closing)#получает два аргумента: название события и функцию, которая будет вызываться при наступлении указанного события
+        return self.input_dialogs()# сообщения выводимые - по поводу сервака, порта и имени
 
     def loop(self):
-        self.gui.mainloop()
+        self.gui.mainloop() #  без неё не создается окно
 
     def fill_frame(self):
-        self.frame = tkinter.Frame(self.gui)
+        self.frame = tkinter.Frame(self.gui) #предназначен для организации виджетов внутри окна
 
         self.scrollbar = tkinter.Scrollbar(self.frame)
-        self.message_list = tkinter.Text(self.frame,state=TEXT_STATE_DISABLED)
-        self.scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+        self.message_list = tkinter.Text(self.frame,state=TEXT_STATE_DISABLED,width=100, height=20)#  позволяет пользователю ввести любое количество текста
+        self.scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y) #прокрутить - правая сторона
         self.message_list.pack(side=tkinter.LEFT,fill=tkinter.BOTH)
         self.message = tkinter.StringVar()
         self.frame.pack()
-        self.input_field = tkinter.Entry(self.gui,textvariable=self.message)
+        self.first_button = tkinter.Button(self.gui, text="-1", command=self.application.send)
+        self.first_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
+        self.second_button = tkinter.Button(self.gui, text="-2", command=self.application.send)
+        self.second_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
+        self.third_button = tkinter.Button(self.gui, text="-3", command=self.application.send)
+        self.third_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
+        self.forth_button = tkinter.Button(self.gui, text="-4", command=self.application.send)
+        self.forth_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
+        self.input_field = tkinter.Entry(self.gui,textvariable=self.message)#позволяющий пользователю ввести одну строку текста
         self.input_field.pack()
-        self.input_field.bind(KEY_RETURN,self.application.send)
-        self.send_button = tkinter.Button(self.gui, text=messagess.SEND, command=self.application.send)
-        self.send_button.pack()
+        #self.input_field.bind(KEY_RETURN,self.application.send)#привязывает событие к какому-либо действию
 
-    def input_dialogs(self):
-        self.gui.lower()
+        self.send_button = tkinter.Button(self.gui, text=messagess.SEND, command=self.application.send)
+        self.send_button.pack() # размещение кнопки на платформе
+
+    def input_dialogs(self): # simpledialog.askstring - импортированное окошка позволяющее ввести одну строку
+        self.gui.lower()#размещает поверх всех других окон
         self.application.username = simpledialog.askstring(messagess.USERNAME, messagess.INPUT_USERNAME, parent=self.gui)
         if self.application.username is None:
             return False
@@ -59,16 +73,20 @@ class EzChatUI(object):
             return False
         return True
 
-    def alert(self, title, message):
+    def alert(self, title, message): # выводим сообщения в табличке...
          messagebox.showerror(title, message)
 
-    def show_message(self, message):
-        self.message_list.configure(state=TEXT_STATE_NORMAL)
-        self.message_list.insert(tkinter.END,str(message) + END_OF_LINE)
+    def change(self,text):
+        self.message = text
+        command=self.application.send
 
-        self.message_list.configure(state=TEXT_STATE_DISABLED)
+    def show_message(self, message):
+        self.message_list.configure(state=TEXT_STATE_NORMAL)# вывод сообщения
+        self.message_list.insert(tkinter.END,str(message) + END_OF_LINE)#добавить текст в конец сообщения
+
+        self.message_list.configure(state=TEXT_STATE_DISABLED)# вывод сообщения
 
 
     def on_closing(self):
         self.application.exit()
-        self.gui.destroy()
+        self.gui.destroy()# уничтожение виджета и всех его потомков
