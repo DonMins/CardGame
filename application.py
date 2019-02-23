@@ -22,13 +22,13 @@ class Application(object):
         Application.instance = self
 
     def execute(self):
-        if not self.ui.show():
+        if not self.ui.show():# появление формы
             return
-        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM) # создали сокет
         try:
-            self.sock.connect(('localhost', 9090))
+            self.sock.connect(('localhost', 9090))# пытаемся подрубиться к серваку
         except (socket.error, OverflowError):
-            self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
+            self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)# ошибка если сервак не врублен
             return
 
         self.receive_worker =threading.Thread(target=self.receive)
