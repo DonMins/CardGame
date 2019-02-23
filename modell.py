@@ -10,10 +10,10 @@ class Message(object):
         self.username = None
         self.message = None
         self.quit = False
-        self.__dict__.update(kwargs)
+        self.__dict__.update(kwargs)#__dict__ - хранить пользовательские атрибуты
 
     def __str__(self):
          return MESSAGE_PATTERN.format(**self.__dict__)
 
     def marshal(self):
-        return (json.dumps(self.__dict__) +   END_CHARACTER).encode(TARGET_ENCODING)
+        return (json.dumps(self.__dict__) +   END_CHARACTER).encode(TARGET_ENCODING) #кодирование
