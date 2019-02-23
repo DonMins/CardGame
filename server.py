@@ -29,22 +29,22 @@ class Server(object):
         self.parse_args(argv)
 
     def listen(self):
-        self.sock.listen(1)
+        self.sock.listen(1)#become a server socket
         while True:
             try:
-                client, address = self.sock.accept()
+                client, address = self.sock.accept() #accept connections from outside
 
             except OSError:
                 print(CONNECTION_ABORTED)
                 return
             print(CONNECTED_PATTERN.format(*address))
-            self.clients.add(client)
-            threading.Thread(target=self.handle,args=(client,)).start()
+            self.clients.add(client) # добавили пользователя на один сервер
+            threading.Thread(target=self.handle,args=(client,)).start()# начал работу поток
 
     def handle(self, client):
         while True:
             try:
-                message = modell.Message(**json.loads(self.receive(client)))
+                message = modell.Message(**json.loads(self.receive(client))) # создали объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
                 return
@@ -64,7 +64,7 @@ class Server(object):
             client.sendall(message.marshal())
 
 
-    def receive(self, client):
+    def receive(self, client):                    # считываение полученного сообщения
         buffer = ""
         while not buffer.endswith(modell.END_CHARACTER):
             buffer +=client.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
@@ -72,10 +72,10 @@ class Server(object):
 
     def run(self):
         print(RUNNING)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.bind(("", 9090))
-        self.listen_thread =threading.Thread(target=self.listen)
-        self.listen_thread.start()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #создание сокета
+        self.sock.bind(("", 9090)) # привязать сокет к хосту и порту
+        self.listen_thread =threading.Thread(target=self.listen)# поток для прослушивания target - это вызываемый объект, который вызывается методом run ()
+        self.listen_thread.start()#Начать активность потока.
 
     def parse_args(self, argv):
         if len(argv) != 4:
