@@ -50,14 +50,23 @@ class EzChatUI(object):
         self.second_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
         self.third_button = tkinter.Button(self.gui, text="-3", command=self.application.send)
         self.third_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
-        self.forth_button = tkinter.Button(self.gui, text="-4", command=self.application.send)
+        self.forth_button = tkinter.Button(self.gui, text="-4")
         self.forth_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
+        self.forth_button.bind("<Button-1>", self.change)
+
         self.input_field = tkinter.Entry(self.gui,textvariable=self.message)#позволяющий пользователю ввести одну строку текста
         self.input_field.pack()
         #self.input_field.bind(KEY_RETURN,self.application.send)#привязывает событие к какому-либо действию
 
         self.send_button = tkinter.Button(self.gui, text=messagess.SEND, command=self.application.send)
         self.send_button.pack() # размещение кнопки на платформе
+
+
+
+
+    def change(self,text):
+        self.message="0"
+        #self.forth_button['text'] = "0" - эта строчка не работает - надо чтобы сюда пришло значение кнопки - чтобы отправить 
 
     def input_dialogs(self): # simpledialog.askstring - импортированное окошка позволяющее ввести одну строку
         self.gui.lower()#размещает поверх всех других окон
@@ -76,9 +85,7 @@ class EzChatUI(object):
     def alert(self, title, message): # выводим сообщения в табличке...
          messagebox.showerror(title, message)
 
-    def change(self,text):
-        self.message = text
-        command=self.application.send
+
 
     def show_message(self, message):
         self.message_list.configure(state=TEXT_STATE_NORMAL)# вывод сообщения
