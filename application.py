@@ -59,9 +59,8 @@ class Application(object):
 
     def send(self, event=None):
         message = self.ui.message.get()
-
         self.ui.message.set("")
-        message = modell.Message(username=self.username, message=message, quit=False)
+        message = modell.Message(username=self.username, message=message, count=self.count, quit=False)
 
         try:
             self.sock.sendall(message.marshal())

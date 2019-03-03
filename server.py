@@ -16,17 +16,22 @@ RUNNING = "Server is running..."
 SERVER = "SERVER"
 SHUTDOWN_MESSAGE = "shutdown"
 TYPE_EXIT = "Type 'exit' to exit>"
+people = 1
 
 
 class Server(object):
 
     def __init__(self, argv):
-        self.suma = 36
         self.clients = set()
         self.listen_thread = None
         self.port = None
         self.sock = None
+        self.message2 = None
+        self.count2 = 10
+        self.message1 = None
+        self.count1 = 10
         self.parse_args(argv)
+        self.people = 1
 
     def listen(self):
         self.sock.listen(1)#become a server socket
@@ -45,6 +50,7 @@ class Server(object):
         while True:
             try:
                 message = modell.Message(**json.loads(self.receive(client))) # создали
+
                 # объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
@@ -53,18 +59,38 @@ class Server(object):
                 client.close()
                 self.clients.remove(client)
                 return
-            print(int(message.message))
-            tmp = int(message.message)
-
-            tmp2 = self.suma+tmp
 
             if SHUTDOWN_MESSAGE.lower() == message.message.lower():
                 self.exit()
                 return
-            self.broadcast(message)
 
-            mes=modell.Message(username="System",message="Ваше значение карты :"+message.message + "  Осталось карт: " , )
-            self.broadcast(mes)
+            if self.people==1:
+                self.message1=message
+
+
+            if self.people==2:
+                self.message2=message
+
+            self.people += 1
+
+            if self.people == 3:
+                if (self.message1.username == 'Don'):
+                    self.count2 =self.count2+int(self.message1.message)
+                if (self.message2.username == 'Tany'):
+                    self.count1 = self.count1 + int(self.message2.message)
+
+
+                mes = modell.Message(username="System",
+                                     message="Карт у :" + self.message1.username + "  осталось " + str(self.count1)+ " y "+
+                                             self.message2.username + "  осталось " + str(self.count2))
+                self.broadcast(mes)
+                self.people = 1
+
+
+
+
+
+
 
     def broadcast(self, message):
         for client in self.clients:
