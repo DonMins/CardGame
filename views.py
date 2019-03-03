@@ -23,6 +23,11 @@ class EzChatUI(object):
         self.second_button = None
         self.third_button = None
         self.forth_button = None
+        self.r1=None
+        self.r2=None
+        self.r3 = None
+        self.r4 = None
+
 
 
     def show(self):
@@ -44,15 +49,21 @@ class EzChatUI(object):
         self.message_list.pack(side=tkinter.LEFT,fill=tkinter.BOTH)
         self.message = tkinter.StringVar()
         self.frame.pack()
-        self.first_button = tkinter.Button(self.gui, text="-1", command=self.application.send)
-        self.first_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
-        self.second_button = tkinter.Button(self.gui, text="-2", command=self.application.send)
-        self.second_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
-        self.third_button = tkinter.Button(self.gui, text="-3", command=self.application.send)
-        self.third_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
+
+        self.r1 = tkinter.Radiobutton(self.gui,text='-3', variable=self.message, value=-3)
+        self.r1.pack()
+        self.r2 = tkinter.Radiobutton(self.gui,text='-4', variable=self.message, value=-4)
+        self.r2.pack()
+        self.r3 = tkinter.Radiobutton(self.gui, text='-2', variable=self.message, value=-2)
+        self.r3.pack()
+        self.r4 = tkinter.Radiobutton(self.gui, text='-1', variable=self.message, value=-1)
+        self.r4.pack()
         self.forth_button = tkinter.Button(self.gui, text="-4")
         self.forth_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
         self.forth_button.bind("<Button-1>", self.change)
+
+
+
 
         self.input_field = tkinter.Entry(self.gui,textvariable=self.message)#позволяющий пользователю ввести одну строку текста
         self.input_field.pack()
@@ -64,9 +75,9 @@ class EzChatUI(object):
 
 
 
-    def change(self,text):
-        self.message="0"
-        #self.forth_button['text'] = "0" - эта строчка не работает - надо чтобы сюда пришло значение кнопки - чтобы отправить 
+    def change(event,self):
+        event.message.set("0")
+        #self.forth_button['text'] = "0" - эта строчка не работает - надо чтобы сюда пришло значение кнопки - чтобы отправить
 
     def input_dialogs(self): # simpledialog.askstring - импортированное окошка позволяющее ввести одну строку
         self.gui.lower()#размещает поверх всех других окон
