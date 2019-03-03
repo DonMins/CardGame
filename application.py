@@ -59,8 +59,7 @@ class Application(object):
 
     def send(self, event=None):
         message = self.ui.message.get()
-        if len(message) == 0:
-            return
+
         self.ui.message.set("")
         message = modell.Message(username=self.username, message=message, quit=False)
 

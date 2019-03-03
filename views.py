@@ -49,7 +49,6 @@ class EzChatUI(object):
         self.message_list.pack(side=tkinter.LEFT,fill=tkinter.BOTH)
         self.message = tkinter.StringVar()
         self.frame.pack()
-
         self.r1 = tkinter.Radiobutton(self.gui,text='-3', variable=self.message, value=-3)
         self.r1.pack()
         self.r2 = tkinter.Radiobutton(self.gui,text='-4', variable=self.message, value=-4)
@@ -58,15 +57,7 @@ class EzChatUI(object):
         self.r3.pack()
         self.r4 = tkinter.Radiobutton(self.gui, text='-1', variable=self.message, value=-1)
         self.r4.pack()
-        self.forth_button = tkinter.Button(self.gui, text="-4")
-        self.forth_button.pack(side=tkinter.LEFT)  # размещение кнопки на платформе
-        self.forth_button.bind("<Button-1>", self.change)
 
-
-
-
-        self.input_field = tkinter.Entry(self.gui,textvariable=self.message)#позволяющий пользователю ввести одну строку текста
-        self.input_field.pack()
         #self.input_field.bind(KEY_RETURN,self.application.send)#привязывает событие к какому-либо действию
 
         self.send_button = tkinter.Button(self.gui, text=messagess.SEND, command=self.application.send)

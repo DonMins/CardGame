@@ -21,7 +21,7 @@ TYPE_EXIT = "Type 'exit' to exit>"
 class Server(object):
 
     def __init__(self, argv):
-
+        self.suma = 36
         self.clients = set()
         self.listen_thread = None
         self.port = None
@@ -44,7 +44,8 @@ class Server(object):
     def handle(self, client):
         while True:
             try:
-                message = modell.Message(**json.loads(self.receive(client))) # создали объект класс и декодирование полученного сообщения
+                message = modell.Message(**json.loads(self.receive(client))) # создали
+                # объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
                 return
@@ -52,13 +53,17 @@ class Server(object):
                 client.close()
                 self.clients.remove(client)
                 return
-            print(str(message))
+            print(int(message.message))
+            tmp = int(message.message)
+
+            tmp2 = self.suma+tmp
 
             if SHUTDOWN_MESSAGE.lower() == message.message.lower():
                 self.exit()
                 return
             self.broadcast(message)
-            mes=modell.Message(username="System",message="Ваша значение карты :"+message.message)
+
+            mes=modell.Message(username="System",message="Ваше значение карты :"+message.message + "  Осталось карт: " , )
             self.broadcast(mes)
 
     def broadcast(self, message):
@@ -76,7 +81,8 @@ class Server(object):
         print(RUNNING)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #создание сокета
         self.sock.bind(("", 9090)) # привязать сокет к хосту и порту
-        self.listen_thread =threading.Thread(target=self.listen)# поток для прослушивания target - это вызываемый объект, который вызывается методом run ()
+        self.listen_thread =threading.Thread(target=self.listen)# поток для прослушивания target - это
+        # вызываемый объект, который вызывается методом run ()
         self.listen_thread.start()#Начать активность потока.
 
     def parse_args(self, argv):
