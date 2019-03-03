@@ -58,6 +58,8 @@ class Server(object):
                 self.exit()
                 return
             self.broadcast(message)
+            mes=modell.Message(username="System",message="Ваша значение карты :"+message.message)
+            self.broadcast(mes)
 
     def broadcast(self, message):
         for client in self.clients:
