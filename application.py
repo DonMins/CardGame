@@ -19,6 +19,8 @@ class Application(object):
         self.sock = None
         self.username = None
         self.ui = views.EzChatUI(self)
+        self.count=10 # максимальное число карт в колоде
+        self.countInHead=4# число карт в руках
         Application.instance = self
 
     def execute(self):
@@ -52,6 +54,7 @@ class Application(object):
         while not buffer.endswith(modell.END_CHARACTER):
             buffer +=self.sock.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
         return buffer[:-1]
+
 
 
     def send(self, event=None):
