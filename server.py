@@ -76,14 +76,26 @@ class Server(object):
 
             if self.people == 3:
                 if (self.message1.username == 'Don'):
-                    self.count2 =self.count2+int(self.message1.message)
+                    if (self.count2==0):
+                        self.count2=-1000
+                    else:
+                        self.count2 =self.count2+int(self.message1.message)
                 if (self.message2.username == 'Tany'):
-                    self.count1 = self.count1 + int(self.message2.message)
-
-
-                mes = modell.Message(username="System",
-                                     message="Карт у :" + self.message1.username + "  осталось " + str(self.count1)+ " y "+
-                                             self.message2.username + "  осталось " + str(self.count2))
+                    if (self.count1==0):
+                        self.count1=-1000
+                    else:
+                        self.count1 = self.count1 + int(self.message2.message)
+                if (self.count1 == -1000):
+                    mes = modell.Message(username="System ",
+                                         message= self.message2.username + "  Победил ")
+                if (self.count2 == -1000):
+                    mes = modell.Message(username="System ",
+                                         message= self.message1.username + "  Победил ")
+                else:
+                    mes = modell.Message(username="System",
+                                         message="Карт у :" + self.message1.username + "  осталось " + str(
+                                             self.count1) + " y " +
+                                               self.message2.username + "  осталось " + str(self.count2))
                 self.broadcast(mes)
                 self.people = 1
 
