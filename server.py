@@ -50,6 +50,7 @@ class Server(object):
         while True:
             try:
                 message = modell.Message(**json.loads(self.receive(client))) # создали
+                print(message.message)
 
                 # объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
