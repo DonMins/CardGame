@@ -32,6 +32,8 @@ class Server(object):
         self.count1 = 10
         self.parse_args(argv)
         self.people = 1
+        self.username1=None
+        self.username2=None
 
     def listen(self):
         self.sock.listen(1)#become a server socket
@@ -67,21 +69,23 @@ class Server(object):
 
             if self.people==1:
                 self.message1=message
+                self.username1=self.message1.username
 
 
             if self.people==2:
                 self.message2=message
+                self.username2 = self.message2.username
 
             self.people += 1
 
             if self.people == 3:
-                if (self.message1.username == 'Don'):
-                    if (self.count2==0):
+                if (self.message1.username == self.username1):
+                    if (self.count2<=0):
                         self.count2=-1000
                     else:
                         self.count2 =self.count2+int(self.message1.message)
-                if (self.message2.username == 'Tany'):
-                    if (self.count1==0):
+                if (self.message2.username == self.username2):
+                    if (self.count1<=0):
                         self.count1=-1000
                     else:
                         self.count1 = self.count1 + int(self.message2.message)
