@@ -21,6 +21,7 @@ class Application(object):
         self.ui = views.EzChatUI(self)
         self.count=10 # максимальное число карт в колоде
         self.countInHead=4# число карт в руках
+        self.lastUser = None
         Application.instance = self
 
     def execute(self):
@@ -38,15 +39,19 @@ class Application(object):
         self.ui.loop()
 
     def receive(self):
+
         while True:
             try:
                 message =modell.Message(**json.loads(self.receive_all()))
+                print(str(message.message))
+                mes = modell.Message(username="System ",
+                                     message=message.username + "  Отправил число " + str(message.message))
+
             except (ConnectionAbortedError, ConnectionResetError):
                 if not self.closing:
                     self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
                 return
-
-            self.ui.show_message(message)
+            self.ui.show_message(mes)
 
 
     def receive_all(self):
@@ -56,11 +61,15 @@ class Application(object):
         return buffer[:-1]
 
 
-
     def send(self, event=None):
+
         message = self.ui.message.get()
         self.ui.message.set("")
         message = modell.Message(username=self.username, message=message, count=self.count, quit=False)
+        self.ui.forth_button['state'] = views.TEXT_STATE_DISABLED
+        self.ui.third_button['state'] = views.TEXT_STATE_DISABLED
+        self.ui.second_button['state'] = views.TEXT_STATE_DISABLED
+        self.ui.first_button['state'] = views.TEXT_STATE_DISABLED
 
         try:
             self.sock.sendall(message.marshal())
@@ -76,3 +85,7 @@ class Application(object):
             print(messagess.CONNECTION_ERROR)
         finally:
             self.sock.close()
+
+
+
+
