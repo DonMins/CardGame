@@ -1,6 +1,9 @@
 import tkinter
 import messagess
 from tkinter import messagebox, simpledialog
+import json
+
+import modell
 
 CLOSING_PROTOCOL = "WM_DELETE_WINDOW"
 END_OF_LINE = "\n"
@@ -50,17 +53,17 @@ class EzChatUI(object):
         self.frame.pack()
 
 
-        self.forth_button = tkinter.Button(self.gui, text="-1", command=self.application.send,bg = "#E2DF69",width=10)
-        self.forth_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
-        self.forth_button.bind("<Button-1>", self.change1)
+        self.first_button = tkinter.Button(self.gui, text="-1", command=self.application.send,bg = "#E2DF69",width=10)
+        self.first_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
+        self.first_button.bind("<Button-1>", self.change1)
 
-        self.forth_button = tkinter.Button(self.gui, text="-2", command=self.application.send,bg = "#E2DF69", width=10)
-        self.forth_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
-        self.forth_button.bind("<Button-1>", self.change2)
+        self.second_button = tkinter.Button(self.gui, text="-2", command=self.application.send,bg = "#E2DF69", width=10)
+        self.second_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
+        self.second_button.bind("<Button-1>", self.change2)
 
-        self.forth_button = tkinter.Button(self.gui, text="-3", command=self.application.send,bg = "#E2DF69",width=10)
-        self.forth_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
-        self.forth_button.bind("<Button-1>", self.change3)
+        self.third_button = tkinter.Button(self.gui, text="-3", command=self.application.send,bg = "#E2DF69",width=10)
+        self.third_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
+        self.third_button.bind("<Button-1>", self.change3)
 
         self.forth_button = tkinter.Button(self.gui, text="-4", command=self.application.send,bg = "#E2DF69",width=10)
 
@@ -69,6 +72,7 @@ class EzChatUI(object):
 
     def change4(event, self):
         event.message.set("-4")
+
 
     def change3(event, self):
         event.message.set("-3")
@@ -80,12 +84,14 @@ class EzChatUI(object):
         event.message.set("-1")
 
 
+
     def input_dialogs(self):  # simpledialog.askstring - импортированное окошка позволяющее ввести одну строку
 
 
         self.gui.lower()  # размещает поверх всех других окон
         self.application.username = simpledialog.askstring(messagess.USERNAME, messagess.INPUT_USERNAME,
                                                            parent=self.gui)
+
 
         if self.application.username is None:
             return False
@@ -101,6 +107,7 @@ class EzChatUI(object):
             return False
         self.gui.title(messagess.TITLE + self.application.username)  # заголовок
         self.fill_frame()  # наполняем наше окно
+        self.show_message(" У каждого игрока по 10 карт в колоде")
         self.gui.protocol(CLOSING_PROTOCOL,
                           self.on_closing)  # получает два аргумента: название события и функцию, которая будет вызываться при наступлении указанного события
         return True
@@ -113,8 +120,13 @@ class EzChatUI(object):
         self.message_list.insert(tkinter.END, str(message) + END_OF_LINE)  # добавить текст в конец сообщения
 
         self.message_list.configure(state=TEXT_STATE_DISABLED)  # вывод сообщения
+        self.forth_button['state'] = TEXT_STATE_NORMAL
+        self.third_button['state'] = TEXT_STATE_NORMAL
+        self.second_button['state'] = TEXT_STATE_NORMAL
+        self.first_button['state'] = TEXT_STATE_NORMAL
 
 
     def on_closing(self):
         self.application.exit()
         self.gui.destroy()  # уничтожение виджета и всех его потомков
+
