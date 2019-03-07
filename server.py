@@ -19,6 +19,7 @@ TYPE_EXIT = "Type 'exit' to exit>"
 people = 1
 
 
+
 class Server(object):
 
     def __init__(self, argv):
@@ -34,21 +35,25 @@ class Server(object):
         self.people = 1
         self.username1=None
         self.username2=None
+        self.k=0
+
+
 
     def listen(self):
-        self.sock.listen(1)#become a server socket
+        self.sock.listen(2)#become a server socket
         while True:
-            try:
-                client, address = self.sock.accept() #accept connections from outside
 
-            except OSError:
-                print(CONNECTION_ABORTED)
-                return
-            print(CONNECTED_PATTERN.format(*address))
-            self.clients.add(client) # добавили пользователя на один сервер
-            threading.Thread(target=self.handle,args=(client,)).start()# начал работу поток
+                try:
+                    client, address = self.sock.accept() #accept connections from outside
+                except OSError:
+                    print(CONNECTION_ABORTED)
+                    return
+                print(CONNECTED_PATTERN.format(*address))
+                self.clients.add(client) # добавили пользователя на один сервер
+                threading.Thread(target=self.handle,args=(client,)).start()# начал работу поток
 
     def handle(self, client):
+
         while True:
             try:
                 message = modell.Message(**json.loads(self.receive(client))) # создали
@@ -67,51 +72,19 @@ class Server(object):
                 self.exit()
                 return
 
-            if self.people==1:
-                self.message1=message
-                self.username1=self.message1.username
-
-
-            if self.people==2:
-                self.message2=message
-                self.username2 = self.message2.username
-
-            self.people += 1
-
-            if self.people == 3:
-                if (self.message1.username == self.username1):
-                    if (self.count2<=0):
-                        self.count2=-1000
-                    else:
-                        self.count2 =self.count2+int(self.message1.message)
-                if (self.message2.username == self.username2):
-                    if (self.count1<=0):
-                        self.count1=-1000
-                    else:
-                        self.count1 = self.count1 + int(self.message2.message)
-                if (self.count1 == -1000):
-                    mes = modell.Message(username="System ",
-                                         message= self.message2.username + "  Победил ")
-                if (self.count2 == -1000):
-                    mes = modell.Message(username="System ",
-                                         message= self.message1.username + "  Победил ")
-                else:
-                    mes = modell.Message(username="System",
-                                         message="Карт у :" + self.message1.username + "  осталось " + str(
-                                             self.count1) + " y " +
-                                               self.message2.username + "  осталось " + str(self.count2))
-                self.broadcast(mes)
-                self.people = 1
-
-
-
-
-
+            mes = modell.Message(username="System", message=message.username + str(message.message))
+            print("fromServer" +str(mes.message))
+            for client2 in self.clients:
+                if(client2 != client):
+                    self.senfFor(mes,client2)
 
 
     def broadcast(self, message):
         for client in self.clients:
             client.sendall(message.marshal())
+
+    def senfFor(self,message,client):
+        client.sendall(message.marshal())
 
 
     def receive(self, client):                    # считываение полученного сообщения
