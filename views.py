@@ -1,6 +1,7 @@
 import tkinter
 import messagess
 from tkinter import messagebox, simpledialog
+import random
 import json
 
 import modell
@@ -30,6 +31,7 @@ class EzChatUI(object):
         self.r2 = None
         self.r3 = None
         self.r4 = None
+        self.text = [random.randint(-4, -1) for i in range(4)]
 
     def show(self):
         self.gui = tkinter.Tk()  # создали класс для пользования библиотекой
@@ -38,6 +40,30 @@ class EzChatUI(object):
 
     def loop(self):
         self.gui.mainloop()  # без неё не создается окно
+
+    def setButton(self):
+        self.first_button = tkinter.Button(self.gui, text=str(self.text[0]), command=self.application.send,
+                                           bg="#E2DF69", width=10)
+
+        self.first_button.pack(side=tkinter.RIGHT, padx=10, pady=10)  # размещение кнопки на платформе
+        self.first_button.bind("<Button-1>", self.change1)
+
+        self.second_button = tkinter.Button(self.gui, text=str(self.text[1]), command=self.application.send,
+                                            bg="#E2DF69", width=10)
+        self.second_button.pack(side=tkinter.RIGHT, padx=10, pady=10)  # размещение кнопки на платформе
+        self.second_button.bind("<Button-1>", self.change2)
+
+        self.third_button = tkinter.Button(self.gui, text=str(self.text[2]), command=self.application.send,
+                                           bg="#E2DF69", width=10)
+        self.third_button.pack(side=tkinter.RIGHT, padx=10, pady=10)  # размещение кнопки на платформе
+        self.third_button.bind("<Button-1>", self.change3)
+
+        self.forth_button = tkinter.Button(self.gui, text=str(self.text[3]), command=self.application.send,
+                                           bg="#E2DF69", width=10)
+
+        self.forth_button.pack(side=tkinter.RIGHT, padx=10, pady=10)  # размещение кнопки на платформе
+        self.forth_button.bind("<Button-1>", self.change4)
+
 
     def fill_frame(self):
 
@@ -51,37 +77,20 @@ class EzChatUI(object):
         self.message_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
         self.message = tkinter.StringVar()
         self.frame.pack()
-
-
-        self.first_button = tkinter.Button(self.gui, text="-1", command=self.application.send,bg = "#E2DF69",width=10)
-        self.first_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
-        self.first_button.bind("<Button-1>", self.change1)
-
-        self.second_button = tkinter.Button(self.gui, text="-2", command=self.application.send,bg = "#E2DF69", width=10)
-        self.second_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
-        self.second_button.bind("<Button-1>", self.change2)
-
-        self.third_button = tkinter.Button(self.gui, text="-3", command=self.application.send,bg = "#E2DF69",width=10)
-        self.third_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
-        self.third_button.bind("<Button-1>", self.change3)
-
-        self.forth_button = tkinter.Button(self.gui, text="-4", command=self.application.send,bg = "#E2DF69",width=10)
-
-        self.forth_button.pack(side = tkinter.RIGHT,padx = 10 , pady = 10)  # размещение кнопки на платформе
-        self.forth_button.bind("<Button-1>", self.change4)
+        self.setButton()
 
     def change4(event, self):
-        event.message.set("-4")
-
+        event.message.set(str(event.text[3]))
 
     def change3(event, self):
-        event.message.set("-3")
+
+        event.message.set(str(event.text[2]))
 
     def change2(event, self):
-        event.message.set("-2")
+        event.message.set(str(event.text[1]))
 
     def change1(event, self):
-        event.message.set("-1")
+        event.message.set(str(event.text[0]))
 
 
 
@@ -90,8 +99,7 @@ class EzChatUI(object):
 
         self.gui.lower()  # размещает поверх всех других окон
         self.application.username = simpledialog.askstring(messagess.USERNAME, messagess.INPUT_USERNAME,
-                                                           parent=self.gui)
-
+                                                          parent=self.gui)
 
         if self.application.username is None:
             return False
@@ -107,7 +115,7 @@ class EzChatUI(object):
             return False
         self.gui.title(messagess.TITLE + self.application.username)  # заголовок
         self.fill_frame()  # наполняем наше окно
-        self.show_message(" У каждого игрока по 10 карт в колоде")
+        self.show_message(" У каждого игрока по 10 карт в колоде и 4 в руке ")
         self.gui.protocol(CLOSING_PROTOCOL,
                           self.on_closing)  # получает два аргумента: название события и функцию, которая будет вызываться при наступлении указанного события
         return True
@@ -120,6 +128,18 @@ class EzChatUI(object):
         self.message_list.insert(tkinter.END, str(message) + END_OF_LINE)  # добавить текст в конец сообщения
 
         self.message_list.configure(state=TEXT_STATE_DISABLED)  # вывод сообщения
+
+        # взяте карт из колоды и update кнопок
+
+        coontOut = abs(self.application.getCountOut())
+        for i in range(coontOut):
+            self.text[i] = random.randint(-4, -1)
+
+        self.forth_button['text'] = str(self.text[3])
+        self.third_button['text'] = str(self.text[2])
+        self.second_button['text'] = str(self.text[1])
+        self.first_button['text'] = str(self.text[0])
+
         self.forth_button['state'] = TEXT_STATE_NORMAL
         self.third_button['state'] = TEXT_STATE_NORMAL
         self.second_button['state'] = TEXT_STATE_NORMAL

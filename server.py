@@ -72,7 +72,7 @@ class Server(object):
                 self.exit()
                 return
 
-            mes = modell.Message(username="System", message=message.username + str(message.message))
+            mes = modell.Message(username=message.username , message= str(message.message))
             print("fromServer" +str(mes.message))
             for client2 in self.clients:
                 if(client2 != client):
@@ -94,12 +94,14 @@ class Server(object):
             return buffer[:-1]
 
     def run(self):
+
         print(RUNNING)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #создание сокета
         self.sock.bind(("", 9090)) # привязать сокет к хосту и порту
         self.listen_thread =threading.Thread(target=self.listen)# поток для прослушивания target - это
         # вызываемый объект, который вызывается методом run ()
         self.listen_thread.start()#Начать активность потока.
+
 
     def parse_args(self, argv):
         if len(argv) != 4:

@@ -19,10 +19,18 @@ class Application(object):
         self.sock = None
         self.username = None
         self.ui = views.EzChatUI(self)
-        self.count=10 # максимальное число карт в колоде
+        self.allCard=14 # максимальное число карт в колоде
+        self.count=0
+        self.countOut=0
         self.countInHead=4# число карт в руках
         self.lastUser = None
         Application.instance = self
+
+    def getCountOut(self):
+        return self.countOut
+
+    def getAllcard(self):
+        return self.allCard
 
     def execute(self):
         if not self.ui.show():# появление формы
@@ -39,13 +47,19 @@ class Application(object):
         self.ui.loop()
 
     def receive(self):
-
         while True:
             try:
                 message =modell.Message(**json.loads(self.receive_all()))
                 print(str(message.message))
-                mes = modell.Message(username="System ",
-                                     message=message.username + "  Отправил число " + str(message.message))
+                self.countOut = int(message.message)
+                self.allCard = self.allCard + int(message.message)
+                if (self.allCard>=0):
+                    mes = modell.Message(username="Бог Судья ",
+                                     message= " Ирок  " + message.username + " отобрал у вас  " + str(message.message)
+                                              +" карты " + " [Баланс = " + str(self.allCard) + " ]")
+                else:
+                    mes = modell.Message(username="Бог Судья ",
+                                         message=" Ирок  " + message.username + " Победил")
 
             except (ConnectionAbortedError, ConnectionResetError):
                 if not self.closing:
