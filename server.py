@@ -17,7 +17,7 @@ SERVER = "SERVER"
 SHUTDOWN_MESSAGE = "shutdown"
 TYPE_EXIT = "Type 'exit' to exit>"
 people = 1
-
+WIN = "Вы победили!!!"
 
 
 class Server(object):
@@ -28,15 +28,12 @@ class Server(object):
         self.port = None
         self.sock = None
         self.message2 = None
-        self.count2 = 10
-        self.message1 = None
-        self.count1 = 10
-        self.parse_args(argv)
-        self.people = 1
-        self.username1=None
-        self.username2=None
-        self.k=0
+        self.countCardUser1 = 14
+        self.countCardUser2 = 14
 
+        self.message1 = None
+
+        self.parse_args(argv)
 
 
     def listen(self):
@@ -53,12 +50,10 @@ class Server(object):
                 threading.Thread(target=self.handle,args=(client,)).start()# начал работу поток
 
     def handle(self, client):
-
         while True:
             try:
                 message = modell.Message(**json.loads(self.receive(client))) # создали
                 print(message.message)
-
                 # объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
@@ -73,11 +68,16 @@ class Server(object):
                 return
 
             mes = modell.Message(username=message.username , message= str(message.message))
-            print("fromServer" +str(mes.message))
+            print("fromServer" +str(mes.message)+ "  "+mes.username)
+
             for client2 in self.clients:
                 if(client2 != client):
                     self.senfFor(mes,client2)
+                if (message.message==sys.maxsize):
 
+                        if (client2 == client) :
+                            mes = modell.Message( username=message.username , message=str(sys.maxsize) )
+                            self.senfFor( mes , client2 )
 
     def broadcast(self, message):
         for client in self.clients:
@@ -97,7 +97,7 @@ class Server(object):
 
         print(RUNNING)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #создание сокета
-        self.sock.bind(("", 9090)) # привязать сокет к хосту и порту
+        self.sock.bind(("", 9091)) # привязать сокет к хосту и порту
         self.listen_thread =threading.Thread(target=self.listen)# поток для прослушивания target - это
         # вызываемый объект, который вызывается методом run ()
         self.listen_thread.start()#Начать активность потока.
@@ -120,7 +120,7 @@ class Server(object):
 
 if __name__ == "__main__":
     try:
-        Server("9090").run()
+        Server("9091").run()
     except RuntimeError as error:
         print(ERROR_OCCURRED)
         print(str(error))

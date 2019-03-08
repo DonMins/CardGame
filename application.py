@@ -2,6 +2,7 @@ import json
 import socket
 import threading
 import messagess
+import sys
 import modell
 import views
 
@@ -20,6 +21,7 @@ class Application(object):
         self.username = None
         self.ui = views.EzChatUI(self)
         self.allCard=14 # максимальное число карт в колоде
+        self.cardRival = 14
         self.count=0
         self.countOut=0
         self.countInHead=4# число карт в руках
@@ -37,7 +39,7 @@ class Application(object):
             return
         self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM) # создали сокет
         try:
-            self.sock.connect(('localhost', 9090))# пытаемся подрубиться к серваку
+            self.sock.connect(('localhost', 9091))# пытаемся подрубиться к серваку
         except (socket.error, OverflowError):
             self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)# ошибка если сервак не врублен
             return
@@ -52,14 +54,31 @@ class Application(object):
                 message =modell.Message(**json.loads(self.receive_all()))
                 print(str(message.message))
                 self.countOut = int(message.message)
-                self.allCard = self.allCard + int(message.message)
+                self.allCard = self.allCard + self.countOut #мой баланс
+
+                if (int(message.message)==sys.maxsize):
+                    mes = modell.Message( username="Бог Судья " ,
+                                          message="Победа!!!")
+                    self.ui.show_message_final( mes )
+                    return
+
+
                 if (self.allCard>=0):
                     mes = modell.Message(username="Бог Судья ",
                                      message= " Ирок  " + message.username + " отобрал у вас  " + str(message.message)
-                                              +" карты " + " [Баланс = " + str(self.allCard) + " ]")
+                                              +" карты " + " [Мой баланс = " + str(self.allCard) + " ]  " +
+                                              "[ Баланс противника = " + str(self.cardRival) + " ]")
                 else:
                     mes = modell.Message(username="Бог Судья ",
                                          message=" Ирок  " + message.username + " Победил")
+                    messag = str(sys.maxsize)
+                    message = modell.Message( username=self.username , message=messag , quit=False )
+                    try :
+                        self.sock.sendall( message.marshal() )
+                    except (ConnectionAbortedError , ConnectionResetError) :
+                        if not self.closing :
+                            self.ui.alert( messagess.ERROR , messagess.CONNECTION_ERROR )
+
 
             except (ConnectionAbortedError, ConnectionResetError):
                 if not self.closing:
@@ -78,6 +97,7 @@ class Application(object):
     def send(self, event=None):
 
         message = self.ui.message.get()
+        self.cardRival = self.cardRival + int(message)
         self.ui.message.set("")
         message = modell.Message(username=self.username, message=message, count=self.count, quit=False)
         self.ui.forth_button['state'] = views.TEXT_STATE_DISABLED

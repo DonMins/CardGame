@@ -145,6 +145,12 @@ class EzChatUI(object):
         self.second_button['state'] = TEXT_STATE_NORMAL
         self.first_button['state'] = TEXT_STATE_NORMAL
 
+    def show_message_final(self, message):
+        self.message_list.configure(state=TEXT_STATE_NORMAL)  # вывод сообщения
+        self.message_list.insert(tkinter.END, str(message) + END_OF_LINE)  # добавить текст в конец сообщения
+
+        self.message_list.configure(state=TEXT_STATE_DISABLED)  # вывод сообщения
+
 
     def on_closing(self):
         self.application.exit()
