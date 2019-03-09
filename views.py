@@ -131,6 +131,9 @@ class EzChatUI(object):
 
         # взяте карт из колоды и update кнопок
 
+        self.application.cardRival = self.application.cardRival - 1
+
+
         coontOut = abs(self.application.getCountOut())
         for i in range(coontOut):
             self.text[i] = random.randint(-4, -1)
@@ -144,12 +147,39 @@ class EzChatUI(object):
         self.third_button['state'] = TEXT_STATE_NORMAL
         self.second_button['state'] = TEXT_STATE_NORMAL
         self.first_button['state'] = TEXT_STATE_NORMAL
+        if (self.application.loser == True):
+            self.application.loser=False # хз но без нее зацикливается
+            self.againCheck()
+    def againCheck(self):
+        self.gui.lower()  # размещает поверх всех других окон
+        self.application.again = messagebox.askyesno(messagess.AGAIN, messagess.AGAIN_YES_NO,
+                                                           parent=self.gui)
+        if self.application.again is None:
+            return False
+        if(self.application.again):
+            self.application.cardRival=14
+            self.application.allCard=14
+            self.application.countOut=0
+            self.forth_button['state'] = TEXT_STATE_NORMAL
+            self.third_button['state'] = TEXT_STATE_NORMAL
+            self.second_button['state'] = TEXT_STATE_NORMAL
+            self.first_button['state'] = TEXT_STATE_NORMAL
+            self.show_message(" У каждого игрока по 10 карт в колоде и 4 в руке ")
+            self.application.winner=False
+            self.application.loser = False
+        self.gui.protocol(CLOSING_PROTOCOL,
+                          self.on_closing)
+
 
     def show_message_final(self, message):
         self.message_list.configure(state=TEXT_STATE_NORMAL)  # вывод сообщения
         self.message_list.insert(tkinter.END, str(message) + END_OF_LINE)  # добавить текст в конец сообщения
 
         self.message_list.configure(state=TEXT_STATE_DISABLED)  # вывод сообщения
+        if(self.application.winner==True):
+            self.againCheck()
+            self.application.winner = False
+
 
 
     def on_closing(self):
