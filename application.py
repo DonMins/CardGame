@@ -26,7 +26,10 @@ class Application(object):
         self.countOut=0
         self.countInHead=4# число карт в руках
         self.lastUser = None
+        self.winner = False
+        self.loser=False
         Application.instance = self
+        self.again = False
 
     def getCountOut(self):
         return self.countOut
@@ -52,32 +55,40 @@ class Application(object):
         while True:
             try:
                 message =modell.Message(**json.loads(self.receive_all()))
-                print(str(message.message))
+                print(str(self.cardRival)+"у противника")
                 self.countOut = int(message.message)
                 self.allCard = self.allCard + self.countOut #мой баланс
 
                 if (int(message.message)==sys.maxsize):
                     mes = modell.Message( username="Бог Судья " ,
                                           message="Победа!!!")
+                    self.winner = True
                     self.ui.show_message_final( mes )
+
                     return
 
 
-                if (self.allCard>=0):
+                if (self.allCard>1 and self.cardRival >0):
                     mes = modell.Message(username="Бог Судья ",
                                      message= " Ирок  " + message.username + " отобрал у вас  " + str(message.message)
                                               +" карты " + " [Мой баланс = " + str(self.allCard) + " ]  " +
                                               "[ Баланс противника = " + str(self.cardRival) + " ]")
                 else:
+                    print(str(self.cardRival) +"при победе")
+                    print(str(self.allCard)+"при победе")
+                    self.loser=True
                     mes = modell.Message(username="Бог Судья ",
                                          message=" Ирок  " + message.username + " Победил")
                     messag = str(sys.maxsize)
                     message = modell.Message( username=self.username , message=messag , quit=False )
                     try :
                         self.sock.sendall( message.marshal() )
+
                     except (ConnectionAbortedError , ConnectionResetError) :
                         if not self.closing :
                             self.ui.alert( messagess.ERROR , messagess.CONNECTION_ERROR )
+
+
 
 
             except (ConnectionAbortedError, ConnectionResetError):
@@ -96,7 +107,9 @@ class Application(object):
 
     def send(self, event=None):
 
+
         message = self.ui.message.get()
+        self.allCard=self.allCard-1
         self.cardRival = self.cardRival + int(message)
         self.ui.message.set("")
         message = modell.Message(username=self.username, message=message, count=self.count, quit=False)
