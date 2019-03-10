@@ -150,6 +150,11 @@ class EzChatUI(object):
         self.second_button['text'] = str(self.text[1])
         self.first_button['text'] = str(self.text[0])
 
+        self.forth_button['state'] = TEXT_STATE_NORMAL
+        self.third_button['state'] = TEXT_STATE_NORMAL
+        self.second_button['state'] = TEXT_STATE_NORMAL
+        self.first_button['state'] = TEXT_STATE_NORMAL
+
 
 
         if (self.application.allCard == 3):
@@ -168,10 +173,7 @@ class EzChatUI(object):
             self.application.loser = False
             self.againCheck()
 
-        self.forth_button['state'] = TEXT_STATE_NORMAL
-        self.third_button['state'] = TEXT_STATE_NORMAL
-        self.second_button['state'] = TEXT_STATE_NORMAL
-        self.first_button['state'] = TEXT_STATE_NORMAL
+
 
 
     def againCheck(self):
