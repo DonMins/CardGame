@@ -55,9 +55,14 @@ class Application(object):
         while True:
             try:
                 message =modell.Message(**json.loads(self.receive_all()))
-                print(str(self.cardRival)+"у противника")
-                self.countOut = int(message.message)
-                self.allCard = self.allCard + self.countOut #мой баланс
+                print("у противника"+str(message.message))
+
+                if ((message.message) == messagess.END_GAME):
+                    mes = modell.Message(username="Бог Судья ",
+                                         message="Второй игрок покинул игру(( Вы Победили!!!")
+                    self.winner = True
+                    self.ui.show_message_final(mes)
+                    return
 
                 if (int(message.message)==sys.maxsize):
                     mes = modell.Message( username="Бог Судья " ,
@@ -68,14 +73,16 @@ class Application(object):
                     return
 
 
+                self.countOut = int(message.message)
+                self.allCard = self.allCard + self.countOut  # мой баланс
+
                 if (self.allCard>1 and self.cardRival >0):
                     mes = modell.Message(username="Бог Судья ",
                                      message= " Ирок  " + message.username + " отобрал у вас  " + str(message.message)
                                               +" карты " + " [Мой баланс = " + str(self.allCard) + " ]  " +
                                               "[ Баланс противника = " + str(self.cardRival) + " ]")
                 else:
-                    print(str(self.cardRival) +"при победе")
-                    print(str(self.allCard)+"при победе")
+
                     self.loser=True
                     mes = modell.Message(username="Бог Судья ",
                                          message=" Ирок  " + message.username + " Победил")
@@ -87,9 +94,6 @@ class Application(object):
                     except (ConnectionAbortedError , ConnectionResetError) :
                         if not self.closing :
                             self.ui.alert( messagess.ERROR , messagess.CONNECTION_ERROR )
-
-
-
 
             except (ConnectionAbortedError, ConnectionResetError):
                 if not self.closing:
@@ -104,12 +108,18 @@ class Application(object):
             buffer +=self.sock.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
         return buffer[:-1]
 
+    def send_end(self):
+        message = modell.Message(username=self.username, message=messagess.END_GAME, quit=False)
+        try:
+            self.sock.sendall(message.marshal())
+        except (ConnectionAbortedError,ConnectionResetError):
+            if not self.closing:
+                self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
 
     def send(self, event=None):
-
-
         message = self.ui.message.get()
         self.allCard=self.allCard-1
+
         self.cardRival = self.cardRival + int(message)
         self.ui.message.set("")
         message = modell.Message(username=self.username, message=message, count=self.count, quit=False)

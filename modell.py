@@ -10,7 +10,7 @@ class Message(object):
         self.username = None
         self.message = None
         self.quit = False
-        self.count =None  # максимальное число карт в колоде
+        self.count =None
         self.__dict__.update(kwargs)#__dict__ - хранить пользовательские атрибуты
 
     def __str__(self):

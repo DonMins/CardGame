@@ -18,6 +18,7 @@ SHUTDOWN_MESSAGE = "shutdown"
 TYPE_EXIT = "Type 'exit' to exit>"
 people = 1
 WIN = "Вы победили!!!"
+END_GAME = "покинул игру"
 
 
 class Server(object):
@@ -53,7 +54,7 @@ class Server(object):
         while True:
             try:
                 message = modell.Message(**json.loads(self.receive(client))) # создали
-                print(message.message)
+
                 # объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
@@ -67,17 +68,23 @@ class Server(object):
                 self.exit()
                 return
 
+
             mes = modell.Message(username=message.username , message= str(message.message))
             print("fromServer" +str(mes.message)+ "  "+mes.username)
-
-            for client2 in self.clients:
-                if(client2 != client):
-                    self.senfFor(mes,client2)
-                if (message.message==sys.maxsize):
-
-                        if (client2 == client) :
-                            mes = modell.Message( username=message.username , message=str(sys.maxsize) )
-                            self.senfFor( mes , client2 )
+            try:
+                for client2 in self.clients:
+                    if(client2 != client):
+                        if (message.message == END_GAME):
+                            mes = modell.Message(username=message.username, message= END_GAME)
+                            self.senfFor(mes, client2)
+                        else:
+                            self.senfFor(mes,client2)
+                    if (message.message==sys.maxsize):
+                            if (client2 == client) :
+                                mes = modell.Message( username=message.username , message=str(sys.maxsize) )
+                                self.senfFor( mes , client2 )
+            except (ConnectionAbortedError, ConnectionResetError):
+                print(CONNECTION_ABORTED)
 
     def broadcast(self, message):
         for client in self.clients:
