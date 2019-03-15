@@ -23,20 +23,22 @@ class Application(object):
         self.ui = views.EzChatUI(self)
         self.allCard = 14  # максимальное число карт в колоде
         self.cardRival = 14
-        self.count = 0
+        self.countClients = None
         self.countOut = 0
         self.countInHead = 4  # число карт в руках
         self.lastUser = None
         self.winner = False
         self.loser = False
         Application.instance = self
-        self.again = False
+        self.again = None
 
     def getCountOut(self):
         return self.countOut
 
+
     def getAllcard(self):
         return self.allCard
+
 
     def execute(self):
         if not self.ui.show():  # появление формы
@@ -56,7 +58,8 @@ class Application(object):
         while True:
             try:
                 message = modell.Message(**json.loads(self.receive_all()))
-                print("у противника" + str(message.message))
+                self.countClients = message.countClients
+                print(self.countClients)
 
                 if ((message.message) == messagess.END_GAME):
                     mes = modell.Message(username="Бог Судья ",
@@ -97,16 +100,22 @@ class Application(object):
                             self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
 
             except (ConnectionAbortedError, ConnectionResetError):
+                self.exit()
                 if not self.closing:
                     self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
+
+
                 return
             self.ui.show_message(mes)
 
     def receive_all(self):
         buffer = ""
-        while not buffer.endswith(modell.END_CHARACTER):
-            buffer += self.sock.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
-        return buffer[:-1]
+        try:
+            while not buffer.endswith(modell.END_CHARACTER):
+                buffer += self.sock.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
+            return buffer[:-1]
+        except Exception:
+            print(messagess.CONNECTION_ERROR)
 
     def send_end(self):
         message = modell.Message(username=self.username, message=messagess.END_GAME, quit=False)
@@ -121,7 +130,7 @@ class Application(object):
         self.allCard = self.allCard - 1
         self.cardRival = self.cardRival + int(message)
         self.ui.message.set("")
-        message = modell.Message(username=self.username, message=message, count=self.count, quit=False)
+        message = modell.Message(username=self.username, message=message, quit=False)
         self.ui.forth_button['state'] = views.TEXT_STATE_DISABLED
         self.ui.third_button['state'] = views.TEXT_STATE_DISABLED
         self.ui.second_button['state'] = views.TEXT_STATE_DISABLED

@@ -68,7 +68,7 @@ class EzChatUI(object):
                                           bg="#E2DF69", width=10)
 
         self.exit_button.pack(side=tkinter.LEFT, padx=10, pady=10)  # размещение кнопки на платформе
-        self.exit_button.bind("<Button-1>", self.change4)
+        self.exit_button.bind("<Button-1>")
 
     def fill_frame(self):
 
@@ -171,8 +171,9 @@ class EzChatUI(object):
                                                      parent=self.gui)
 
         if self.application.again == False:
-            self.on_closing()
+            self.exit_button.invoke()
             return False
+
 
         if (self.application.again):
             self.application.cardRival = 14
@@ -209,7 +210,11 @@ class EzChatUI(object):
         self.first_button['state'] = TEXT_STATE_DISABLED
 
     def on_closing(self):
-        self.application.send_end()
-        self.application.exit()
-        self.gui.destroy()  # уничтожение виджета и всех его потомков
+        print(self.application.countClients )
+        if self.application.countClients > 1:
+            self.application.send_end()
+            self.application.exit()
+
+
         self.application.sock.close()
+        self.gui.destroy()  # уничтожение виджета и всех его потомков

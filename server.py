@@ -24,6 +24,7 @@ END_GAME = "покинул игру"
 class Server(object):
     def __init__(self, argv):
         self.clients = set()
+        self.countClients = 0
         self.listen_thread = None
         self.port = None
         self.sock = None
@@ -32,6 +33,7 @@ class Server(object):
         self.countCardUser2 = 14
         self.message1 = None
 
+
     def listen(self):
         self.sock.listen(1)  # become a server socket
         while True:
@@ -39,17 +41,21 @@ class Server(object):
                 client, address = self.sock.accept()  # accept connections from outside
             except OSError:
                 print(CONNECTION_ABORTED)
+                self.countClients = len(self.clients)
                 return
             print(CONNECTED_PATTERN.format(*address))
             self.clients.add(client)  # добавили пользователя на один сервер
+            self.countClients = len(self.clients)
             threading.Thread(target=self.handle, args=(client,)).start()  # начал работу поток
 
     def handle(self, client):
         while True:
             try:
+                print(self.countClients)
                 message = modell.Message(**json.loads(self.receive(client)))  # создали
                 # объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
+                self.countClients = len(self.clients)
                 print(CONNECTION_ABORTED)
                 return
             if message.quit:
@@ -57,20 +63,21 @@ class Server(object):
                 self.clients.remove(client)
                 return
 
-            mes = modell.Message(username=message.username, message=str(message.message))
+            mes = modell.Message(username=message.username, message=str(message.message), countClients = self.countClients)
             try:
                 for client2 in self.clients:
                     if (client2 != client):
                         if (message.message == END_GAME):
-                            mes = modell.Message(username=message.username, message=END_GAME)
+                            mes = modell.Message(username=message.username, message=END_GAME, countClients=self.countClients)
                             self.senfFor(mes, client2)
                         else:
                             self.senfFor(mes, client2)
                     if (message.message == sys.maxsize):
                         if (client2 == client):
-                            mes = modell.Message(username=message.username, message=str(sys.maxsize))
+                            mes = modell.Message(username=message.username, message=str(sys.maxsize),countClients=self.countClients)
                             self.senfFor(mes, client2)
             except (ConnectionAbortedError, ConnectionResetError):
+                self.countClients = len(self.clients)
                 print(CONNECTION_ABORTED)
 
     def senfFor(self, message, client):
@@ -92,10 +99,14 @@ class Server(object):
 
 
     def exit(self):
+
         self.sock.close()
+
         for client in self.clients:
             client.close()
+
             print(CLOSING)
+        self.countClients = len(self.clients)
 
 
 if __name__ == "__main__":
