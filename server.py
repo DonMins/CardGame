@@ -22,7 +22,6 @@ END_GAME = "покинул игру"
 
 
 class Server(object):
-
     def __init__(self, argv):
         self.clients = set()
         self.listen_thread = None
@@ -31,30 +30,24 @@ class Server(object):
         self.message2 = None
         self.countCardUser1 = 14
         self.countCardUser2 = 14
-
         self.message1 = None
 
-        self.parse_args(argv)
-
-
     def listen(self):
-        self.sock.listen(2)#become a server socket
+        self.sock.listen(1)  # become a server socket
         while True:
-
-                try:
-                    client, address = self.sock.accept() #accept connections from outside
-                except OSError:
-                    print(CONNECTION_ABORTED)
-                    return
-                print(CONNECTED_PATTERN.format(*address))
-                self.clients.add(client) # добавили пользователя на один сервер
-                threading.Thread(target=self.handle,args=(client,)).start()# начал работу поток
+            try:
+                client, address = self.sock.accept()  # accept connections from outside
+            except OSError:
+                print(CONNECTION_ABORTED)
+                return
+            print(CONNECTED_PATTERN.format(*address))
+            self.clients.add(client)  # добавили пользователя на один сервер
+            threading.Thread(target=self.handle, args=(client,)).start()  # начал работу поток
 
     def handle(self, client):
         while True:
             try:
-                message = modell.Message(**json.loads(self.receive(client))) # создали
-
+                message = modell.Message(**json.loads(self.receive(client)))  # создали
                 # объект класс и декодирование полученного сообщения
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
@@ -64,60 +57,38 @@ class Server(object):
                 self.clients.remove(client)
                 return
 
-            if SHUTDOWN_MESSAGE.lower() == message.message.lower():
-                self.exit()
-                return
-
-
-            mes = modell.Message(username=message.username , message= str(message.message))
-            print("fromServer" +str(mes.message)+ "  "+mes.username)
+            mes = modell.Message(username=message.username, message=str(message.message))
             try:
                 for client2 in self.clients:
-                    if(client2 != client):
+                    if (client2 != client):
                         if (message.message == END_GAME):
-                            mes = modell.Message(username=message.username, message= END_GAME)
+                            mes = modell.Message(username=message.username, message=END_GAME)
                             self.senfFor(mes, client2)
-                            self.exit()
                         else:
-                            self.senfFor(mes,client2)
-                    if (message.message==sys.maxsize):
-                            if (client2 == client) :
-                                mes = modell.Message( username=message.username , message=str(sys.maxsize) )
-                                self.senfFor( mes , client2 )
+                            self.senfFor(mes, client2)
+                    if (message.message == sys.maxsize):
+                        if (client2 == client):
+                            mes = modell.Message(username=message.username, message=str(sys.maxsize))
+                            self.senfFor(mes, client2)
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
 
-    def broadcast(self, message):
-        for client in self.clients:
-            client.sendall(message.marshal())
-
-    def senfFor(self,message,client):
+    def senfFor(self, message, client):
         client.sendall(message.marshal())
 
-
-    def receive(self, client):                    # считываение полученного сообщения
+    def receive(self, client):  # считываение полученного сообщения
         buffer = ""
         while not buffer.endswith(modell.END_CHARACTER):
-            buffer +=client.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
+            buffer += client.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
             return buffer[:-1]
 
     def run(self):
-
         print(RUNNING)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #создание сокета
-        self.sock.bind(("", 9091)) # привязать сокет к хосту и порту
-        self.listen_thread =threading.Thread(target=self.listen)# поток для прослушивания target - это
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # создание сокета
+        self.sock.bind(("", 9091))  # привязать сокет к хосту и порту
+        self.listen_thread = threading.Thread(target=self.listen)  # поток для прослушивания target - это
         # вызываемый объект, который вызывается методом run ()
-        self.listen_thread.start()#Начать активность потока.
-
-
-    def parse_args(self, argv):
-        if len(argv) != 4:
-            raise RuntimeError(ERROR_ARGUMENTS)
-        try:
-            self.port = int(argv[1])
-        except ValueError:
-            raise RuntimeError(ERROR_ARGUMENTS)
+        self.listen_thread.start()  # Начать активность потока.
 
 
     def exit(self):
@@ -125,6 +96,7 @@ class Server(object):
         for client in self.clients:
             client.close()
             print(CLOSING)
+
 
 if __name__ == "__main__":
     try:
