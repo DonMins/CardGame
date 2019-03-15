@@ -110,15 +110,15 @@ class EzChatUI(object):
         if self.application.username is None:
             return False
 
-        self.application.host = simpledialog.askstring(messagess.SERVER_HOST, messagess.INPUT_SERVER_HOST,
-                                                       parent=self.gui)
-        if self.application.host is None:
-            return False
-        self.application.port = simpledialog.askinteger(messagess.SERVER_PORT, messagess.INPUT_SERVER_PORT,
-                                                        parent=self.gui)
-
-        if self.application.port is None:
-            return False
+        # self.application.host = simpledialog.askstring(messagess.SERVER_HOST, messagess.INPUT_SERVER_HOST,
+        #                                                parent=self.gui)
+        # if self.application.host is None:
+        #     return False
+        # self.application.port = simpledialog.askinteger(messagess.SERVER_PORT, messagess.INPUT_SERVER_PORT,
+        #                                                 parent=self.gui)
+        #
+        # if self.application.port is None:
+        #     return False
         self.gui.title(messagess.TITLE + self.application.username)  # заголовок
         self.fill_frame()  # наполняем наше окно
         self.show_message(" У каждого игрока по 10 карт в колоде и 4 в руке ")
@@ -150,6 +150,11 @@ class EzChatUI(object):
         self.second_button['text'] = str(self.text[1])
         self.first_button['text'] = str(self.text[0])
 
+        self.forth_button['state'] = TEXT_STATE_NORMAL
+        self.third_button['state'] = TEXT_STATE_NORMAL
+        self.second_button['state'] = TEXT_STATE_NORMAL
+        self.first_button['state'] = TEXT_STATE_NORMAL
+
 
 
         if (self.application.allCard == 3):
@@ -168,16 +173,14 @@ class EzChatUI(object):
             self.application.loser = False
             self.againCheck()
 
-        self.forth_button['state'] = TEXT_STATE_NORMAL
-        self.third_button['state'] = TEXT_STATE_NORMAL
-        self.second_button['state'] = TEXT_STATE_NORMAL
-        self.first_button['state'] = TEXT_STATE_NORMAL
+
 
 
     def againCheck(self):
         self.gui.lower()  # размещает поверх всех других окон
         self.application.again = messagebox.askyesno(messagess.AGAIN, messagess.AGAIN_YES_NO,
                                                            parent=self.gui)
+
         if self.application.again ==False:
             self.on_closing()
             return False

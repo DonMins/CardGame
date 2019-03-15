@@ -11,8 +11,8 @@ BUFFER_SIZE = 2 ** 10
 class Application(object):
     instance = None
 
-    def __init__(self, args):
-        self.args = args
+    def __init__(self):
+
         self.closing = False
         self.host = None
         self.port = None
@@ -63,6 +63,7 @@ class Application(object):
                     self.winner = True
                     self.ui.show_message_final(mes)
                     return
+
 
                 if (int(message.message)==sys.maxsize):
                     mes = modell.Message( username="Бог Судья " ,

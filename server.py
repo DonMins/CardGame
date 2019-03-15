@@ -77,6 +77,7 @@ class Server(object):
                         if (message.message == END_GAME):
                             mes = modell.Message(username=message.username, message= END_GAME)
                             self.senfFor(mes, client2)
+                            self.exit()
                         else:
                             self.senfFor(mes,client2)
                     if (message.message==sys.maxsize):
