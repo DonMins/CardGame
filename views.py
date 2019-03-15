@@ -210,7 +210,6 @@ class EzChatUI(object):
         self.first_button['state'] = TEXT_STATE_DISABLED
 
     def on_closing(self):
-
         self.application.send_end()
         self.application.exit()
         self.application.sock.close()
