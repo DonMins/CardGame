@@ -59,7 +59,7 @@ class Application(object):
             try:
                 message = modell.Message(**json.loads(self.receive_all()))
                 self.countClients = message.countClients
-                print(self.countClients)
+
 
                 if ((message.message) == messagess.END_GAME):
                     mes = modell.Message(username="Бог Судья ",
@@ -99,12 +99,10 @@ class Application(object):
                         if not self.closing:
                             self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
 
-            except (ConnectionAbortedError, ConnectionResetError):
-                self.exit()
+            except (ConnectionAbortedError, ConnectionResetError, TypeError):
+
                 if not self.closing:
                     self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
-
-
                 return
             self.ui.show_message(mes)
 

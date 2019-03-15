@@ -210,11 +210,8 @@ class EzChatUI(object):
         self.first_button['state'] = TEXT_STATE_DISABLED
 
     def on_closing(self):
-        print(self.application.countClients )
-        if self.application.countClients > 1:
-            self.application.send_end()
-            self.application.exit()
 
-
+        self.application.send_end()
+        self.application.exit()
         self.application.sock.close()
         self.gui.destroy()  # уничтожение виджета и всех его потомков

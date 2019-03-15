@@ -1,4 +1,4 @@
-CONNECTION_ERROR = "Could not connect to server"
+CONNECTION_ERROR = ""
 ERROR = "Error"
 INPUT_SERVER_HOST = "Input Server Host"
 INPUT_SERVER_PORT = "Input Server Port"
