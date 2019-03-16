@@ -9,6 +9,7 @@ class Message(object):
     def __init__(self, **kwargs):
         self.username = None
         self.message = None
+        self.startcard = None
         self.quit = False
         self.countClients =None
         self.__dict__.update(kwargs)#__dict__ - хранить пользовательские атрибуты
