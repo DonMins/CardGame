@@ -19,7 +19,6 @@ class EzChatUI(object):
         self.gui = None
         self.frame = None
         self.input_field = None
-        self.g = 0
         self.message = None
         self.message_list = None
         self.scrollbar = None
@@ -28,6 +27,8 @@ class EzChatUI(object):
         self.second_button = None
         self.third_button = None
         self.forth_button = None
+        self.exit_button = None
+        self.repeat_button = None
         self.r1 = None
         self.r2 = None
         self.r3 = None
@@ -70,6 +71,15 @@ class EzChatUI(object):
         self.exit_button.pack(side=tkinter.LEFT, padx=10, pady=10)  # размещение кнопки на платформе
         self.exit_button.bind("<Button-1>")
 
+        self.repeat_button = tkinter.Button(self.gui, text=str("ПОВТОР"), command=self.repeat,
+                                            bg="#E2DF69", width=10)
+
+        self.repeat_button.pack(side=tkinter.LEFT, padx=10, pady=10)  # размещение кнопки на платформе
+        self.repeat_button.bind("<Button-1>")
+        self.repeat_button.pack_forget()
+
+
+
     def fill_frame(self):
 
         self.frame = tkinter.Frame(self.gui, highlightbackground="black", highlightcolor="green", highlightthickness=2,
@@ -106,18 +116,15 @@ class EzChatUI(object):
         if self.application.username is None:
             return False
 
-        # self.application.host = simpledialog.askstring(messagess.SERVER_HOST, messagess.INPUT_SERVER_HOST,
-        #                                                parent=self.gui)
-        # if self.application.host is None:
-        #     return False
-        # self.application.port = simpledialog.askinteger(messagess.SERVER_PORT, messagess.INPUT_SERVER_PORT,
-        #                                                 parent=self.gui)
-        #
-        # if self.application.port is None:
-        #     return False
         self.gui.title(messagess.TITLE + self.application.username)  # заголовок
         self.fill_frame()  # наполняем наше окно
+
         self.show_message(" У каждого игрока по 10 карт в колоде и 4 в руке ")
+        if(self.application.countClients==1):
+            self.forth_button['state'] = TEXT_STATE_DISABLED
+            self.third_button['state'] = TEXT_STATE_DISABLED
+            self.second_button['state'] =TEXT_STATE_DISABLED
+            self.first_button['state'] = TEXT_STATE_DISABLED
         self.gui.protocol(CLOSING_PROTOCOL,
                           self.on_closing)  # получает два аргумента: название события и функцию, которая будет вызываться при наступлении указанного события
         return True
@@ -133,7 +140,7 @@ class EzChatUI(object):
 
         # взяте карт из колоды и update кнопок
 
-        self.application.cardRival = self.application.cardRival - 1
+        self.application.cardRival = self.application.cardRival-1
 
         coontOut = abs(self.application.getCountOut())
         for i in range(coontOut):
@@ -163,33 +170,38 @@ class EzChatUI(object):
 
         if (self.application.loser == True):
             self.application.loser = False
+            self.forth_button['state'] = TEXT_STATE_DISABLED
+            self.third_button['state'] = TEXT_STATE_DISABLED
+            self.second_button['state'] = TEXT_STATE_DISABLED
+            self.first_button['state'] = TEXT_STATE_DISABLED
             self.againCheck()
+        if(self.application.countClients==1):
+            self.forth_button['state'] = TEXT_STATE_DISABLED
+            self.third_button['state'] = TEXT_STATE_DISABLED
+            self.second_button['state'] = TEXT_STATE_DISABLED
+            self.first_button['state'] = TEXT_STATE_DISABLED
+
 
     def againCheck(self):
-        self.gui.lower()  # размещает поверх всех других окон
-        self.application.again = messagebox.askyesno(messagess.AGAIN, messagess.AGAIN_YES_NO,
-                                                     parent=self.gui)
 
-        if self.application.again == False:
-            self.exit_button.invoke()
-            return False
+        self.repeat_button.pack(side=tkinter.LEFT, padx=10, pady=10)  # размещение кнопки на платформе
 
+    def repeat(self):
+        self.application.cardRival = 14
+        self.application.allCard = 14
+        self.application.countOut = 0
+        self.forth_button['state'] = TEXT_STATE_NORMAL
+        self.third_button['state'] = TEXT_STATE_NORMAL
+        self.second_button['state'] = TEXT_STATE_NORMAL
+        self.first_button['state'] = TEXT_STATE_NORMAL
+        self.show_message(" У каждого игрока по 10 карт в колоде и 4 в руке ")
+        self.application.winner = False
+        self.application.again = False
+        self.application.loser = False
+        self.application.receive_worker = threading.Thread(target=self.application.receive)
+        self.application.receive_worker.start()
+        self.repeat_button.pack_forget()
 
-        if (self.application.again):
-            self.application.cardRival = 14
-            self.application.allCard = 14
-            self.application.countOut = 0
-            self.forth_button['state'] = TEXT_STATE_NORMAL
-            self.third_button['state'] = TEXT_STATE_NORMAL
-            self.second_button['state'] = TEXT_STATE_NORMAL
-            self.first_button['state'] = TEXT_STATE_NORMAL
-            self.show_message(" У каждого игрока по 10 карт в колоде и 4 в руке ")
-            self.application.winner = False
-            self.application.again = False
-            self.application.loser = False
-            self.application.receive_worker = threading.Thread(target=self.application.receive)
-            self.application.receive_worker.start()
-        self.gui.protocol(CLOSING_PROTOCOL, self.on_closing)
 
     def show_message_final(self, message):
         self.message_list.configure(state=TEXT_STATE_NORMAL)  # вывод сообщения
@@ -212,5 +224,5 @@ class EzChatUI(object):
     def on_closing(self):
         self.application.send_end()
         self.application.exit()
-        self.application.sock.close()
         self.gui.destroy()  # уничтожение виджета и всех его потомков
+        self.application.sock.close()
