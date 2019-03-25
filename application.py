@@ -11,9 +11,7 @@ BUFFER_SIZE = 2 ** 10
 
 class Application(object):
     instance = None
-
     def __init__(self):
-
         self.closing = False
         self.host = None
         self.port = None
@@ -30,7 +28,6 @@ class Application(object):
         Application.instance = self
         self.countClients = 1
 
-
     def getCountOut(self):
         return self.countOut
 
@@ -40,7 +37,7 @@ class Application(object):
     def execute(self):
         if not self.ui.show():  # появление формы
             return
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # создали сокет
+        self.sock = socket.socket()  # создали сокет
         try:
             self.sock.connect(('localhost', 9092))  # пытаемся подрубиться к серваку\
 
@@ -84,7 +81,7 @@ class Application(object):
                     mes = modell.Message(username="Бог Судья ",
                                          message=" Ирок  " + message.username + " отобрал у вас  " + str(
                                              message.message)
-                                                 + " карты " + " [Мой баланс = " + str(self.allCard) + " ]  " +
+                                                 + " карты " + " [Ваш баланс = " + str(self.allCard) + " ]  " +
                                                  "[ Баланс противника = " + str(self.cardRival) + " ]")
                 elif(self.startcard !=2 and int(message.message)<1):
 
@@ -131,6 +128,9 @@ class Application(object):
 
     def send(self):
         message = self.ui.message.get()
+        if(self.allCard >4):
+            self.ui.updateButton()
+
         self.allCard = self.allCard - 1
         self.cardRival = self.cardRival + int(message)
         self.ui.message.set("")

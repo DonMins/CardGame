@@ -34,6 +34,11 @@ class EzChatUI(object):
         self.r3 = None
         self.r4 = None
         self.text = [random.randint(-4, -1) for i in range(4)]
+        self.isButton1 = False
+        self.isButton2 = False
+        self.isButton3 = False
+        self.isButton4 = False
+        self.blockButtons=0
 
     def show(self):
         self.gui = tkinter.Tk()  # создали класс для пользования библиотекой
@@ -97,19 +102,63 @@ class EzChatUI(object):
         self.setButton()
 
     def change4(event, self):
+        event.isButton4 = True
         event.message.set(str(event.text[3]))
+        # if(event.application.allCard > 4):
+        #     event.text[3] = random.randint(-4, -1)
+        #     event.forth_button['text'] = event.text[3]
+        # else:
+        #     self.forth_button['state'] = TEXT_STATE_DISABLED
+
 
     def change3(event, self):
+        event.isButton3 = True
         event.message.set(str(event.text[2]))
+        # if (event.application.allCard > 4):
+        #     event.text[2] = random.randint(-4, -1)
+        #     event.third_button['text'] = event.text[2]
+        # else:
+        #     self.third_button['state'] = TEXT_STATE_DISABLED
 
     def change2(event, self):
+        event.isButton2 = True
         event.message.set(str(event.text[1]))
+        # if (event.application.allCard > 4):
+        #     event.text[1] = random.randint(-4, -1)
+        #     event.second_button['text'] = event.text[1]
+        # else:
+        #     self.second_button['state'] = TEXT_STATE_DISABLED
 
     def change1(event, self):
+        event.isButton1 = True
         event.message.set(str(event.text[0]))
+        # if (event.application.allCard > 4):
+        #     event.text[0] = random.randint(-4, -1)
+        #     event.first_button['text'] = event.text[0]
+        # else:
+        #     self.first_button['state'] = TEXT_STATE_DISABLED
+
+    def updateButton(event):
+        if (event.isButton1):
+            event.text[0] = random.randint(-4, -1)
+            event.first_button['text'] = event.text[0]
+        if (event.isButton2):
+            event.text[1] = random.randint(-4, -1)
+            event.second_button['text'] = event.text[1]
+        if (event.isButton3):
+            event.text[2] = random.randint(-4, -1)
+            event.third_button['text'] = event.text[2]
+        if (event.isButton4):
+            event.text[3] = random.randint(-4, -1)
+            event.forth_button['text'] = event.text[3]
+
+        event.isButton1=False
+        event.isButton2=False
+        event.isButton3=False
+        event.isButton4=False
+
 
     def input_dialogs(self):  # simpledialog.askstring - импортированное окошка позволяющее ввести одну строку
-
         self.gui.lower()  # размещает поверх всех других окон
         self.application.username = simpledialog.askstring(messagess.USERNAME, messagess.INPUT_USERNAME,
                                                            parent=self.gui)
@@ -132,6 +181,7 @@ class EzChatUI(object):
     def alert(self, title, message):  # выводим сообщения в табличке...
         messagebox.showerror(title, message)
 
+
     def show_message(self, message):
         self.message_list.configure(state=TEXT_STATE_NORMAL)  # вывод сообщения
         self.message_list.insert(tkinter.END, str(message) + END_OF_LINE)  # добавить текст в конец сообщения
@@ -143,8 +193,9 @@ class EzChatUI(object):
         self.application.cardRival = self.application.cardRival-1
 
         coontOut = abs(self.application.getCountOut())
-        for i in range(coontOut):
-            self.text[i] = random.randint(-4, -1)
+        if (self.application.allCard > 4):
+            for i in range(coontOut):
+                self.text[i] = random.randint(-4, -1)
 
         self.forth_button['text'] = str(self.text[3])
         self.third_button['text'] = str(self.text[2])
@@ -155,6 +206,12 @@ class EzChatUI(object):
         self.third_button['state'] = TEXT_STATE_NORMAL
         self.second_button['state'] = TEXT_STATE_NORMAL
         self.first_button['state'] = TEXT_STATE_NORMAL
+        if(self.application.allCard > 4):
+            self.isButton4=False
+            self.isButton3 = False
+            self.isButton2 = False
+            self.isButton1 = False
+
 
         if (self.application.allCard == 3):
             self.forth_button['state'] = TEXT_STATE_DISABLED
@@ -167,6 +224,30 @@ class EzChatUI(object):
             self.forth_button['state'] = TEXT_STATE_DISABLED
             self.third_button['state'] = TEXT_STATE_DISABLED
             self.second_button['state'] = TEXT_STATE_DISABLED
+        if(self.application.allCard < 4):
+            if(self.isButton4==True):
+                self.forth_button['state'] = TEXT_STATE_DISABLED
+            if (self.isButton3 == True):
+                self.third_button['state'] = TEXT_STATE_DISABLED
+            if (self.isButton2 == True):
+                self.second_button['state'] = TEXT_STATE_DISABLED
+            if (self.isButton1 == True):
+                self.first_button['state'] = TEXT_STATE_DISABLED
+            # if (self.application.allCard == 3):
+            #     self.forth_button['state'] = TEXT_STATE_DISABLED
+
+            if (self.application.allCard == 2):
+                self.forth_button['state'] = TEXT_STATE_DISABLED
+                self.third_button['state'] = TEXT_STATE_DISABLED
+
+            if (self.application.allCard == 1):
+                self.forth_button['state'] = TEXT_STATE_DISABLED
+                self.third_button['state'] = TEXT_STATE_DISABLED
+                self.second_button['state'] = TEXT_STATE_DISABLED
+
+
+
+
 
         if (self.application.loser == True):
             self.application.loser = False
@@ -201,6 +282,11 @@ class EzChatUI(object):
         self.application.receive_worker = threading.Thread(target=self.application.receive)
         self.application.receive_worker.start()
         self.repeat_button.pack_forget()
+        self.isButton1 = False
+        self.isButton2 = False
+        self.isButton3 = False
+        self.isButton4 = False
+
 
 
     def show_message_final(self, message):
