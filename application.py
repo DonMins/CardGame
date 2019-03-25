@@ -130,7 +130,6 @@ class Application(object):
         message = self.ui.message.get()
         if(self.allCard >4):
             self.ui.updateButton()
-
         self.allCard = self.allCard - 1
         self.cardRival = self.cardRival + int(message)
         self.ui.message.set("")

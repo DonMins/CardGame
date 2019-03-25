@@ -38,7 +38,7 @@ class EzChatUI(object):
         self.isButton2 = False
         self.isButton3 = False
         self.isButton4 = False
-        self.blockButtons=0
+        self.sign = [0,0,0,0]
 
     def show(self):
         self.gui = tkinter.Tk()  # создали класс для пользования библиотекой
@@ -84,7 +84,6 @@ class EzChatUI(object):
         self.repeat_button.pack_forget()
 
 
-
     def fill_frame(self):
 
         self.frame = tkinter.Frame(self.gui, highlightbackground="black", highlightcolor="green", highlightthickness=2,
@@ -104,39 +103,18 @@ class EzChatUI(object):
     def change4(event, self):
         event.isButton4 = True
         event.message.set(str(event.text[3]))
-        # if(event.application.allCard > 4):
-        #     event.text[3] = random.randint(-4, -1)
-        #     event.forth_button['text'] = event.text[3]
-        # else:
-        #     self.forth_button['state'] = TEXT_STATE_DISABLED
-
 
     def change3(event, self):
         event.isButton3 = True
         event.message.set(str(event.text[2]))
-        # if (event.application.allCard > 4):
-        #     event.text[2] = random.randint(-4, -1)
-        #     event.third_button['text'] = event.text[2]
-        # else:
-        #     self.third_button['state'] = TEXT_STATE_DISABLED
 
     def change2(event, self):
         event.isButton2 = True
         event.message.set(str(event.text[1]))
-        # if (event.application.allCard > 4):
-        #     event.text[1] = random.randint(-4, -1)
-        #     event.second_button['text'] = event.text[1]
-        # else:
-        #     self.second_button['state'] = TEXT_STATE_DISABLED
 
     def change1(event, self):
         event.isButton1 = True
         event.message.set(str(event.text[0]))
-        # if (event.application.allCard > 4):
-        #     event.text[0] = random.randint(-4, -1)
-        #     event.first_button['text'] = event.text[0]
-        # else:
-        #     self.first_button['state'] = TEXT_STATE_DISABLED
 
     def updateButton(event):
         if (event.isButton1):
@@ -156,7 +134,6 @@ class EzChatUI(object):
         event.isButton2=False
         event.isButton3=False
         event.isButton4=False
-
 
     def input_dialogs(self):  # simpledialog.askstring - импортированное окошка позволяющее ввести одну строку
         self.gui.lower()  # размещает поверх всех других окон
@@ -181,6 +158,12 @@ class EzChatUI(object):
     def alert(self, title, message):  # выводим сообщения в табличке...
         messagebox.showerror(title, message)
 
+    def whatToBlock(self,sign):
+        number=0
+        for i in range(4):  # посчитали сколько заблоченно
+            if(sign[i]==1):
+                number+=1
+        return number
 
     def show_message(self, message):
         self.message_list.configure(state=TEXT_STATE_NORMAL)  # вывод сообщения
@@ -206,48 +189,50 @@ class EzChatUI(object):
         self.third_button['state'] = TEXT_STATE_NORMAL
         self.second_button['state'] = TEXT_STATE_NORMAL
         self.first_button['state'] = TEXT_STATE_NORMAL
+
         if(self.application.allCard > 4):
             self.isButton4=False
             self.isButton3 = False
             self.isButton2 = False
             self.isButton1 = False
 
-
-        if (self.application.allCard == 3):
-            self.forth_button['state'] = TEXT_STATE_DISABLED
-
-        if (self.application.allCard == 2):
-            self.forth_button['state'] = TEXT_STATE_DISABLED
-            self.third_button['state'] = TEXT_STATE_DISABLED
-
-        if (self.application.allCard == 1):
-            self.forth_button['state'] = TEXT_STATE_DISABLED
-            self.third_button['state'] = TEXT_STATE_DISABLED
-            self.second_button['state'] = TEXT_STATE_DISABLED
-        if(self.application.allCard < 4):
-            if(self.isButton4==True):
+        if(self.application.allCard <= 4):
+            if(self.isButton4==True ):
                 self.forth_button['state'] = TEXT_STATE_DISABLED
-            if (self.isButton3 == True):
+                self.sign[3]=1
+            if (self.isButton3 == True ):
                 self.third_button['state'] = TEXT_STATE_DISABLED
-            if (self.isButton2 == True):
+                self.sign[2] = 1
+            if (self.isButton2 == True ):
                 self.second_button['state'] = TEXT_STATE_DISABLED
-            if (self.isButton1 == True):
+                self.sign[1] = 1
+            if (self.isButton1 == True ):
                 self.first_button['state'] = TEXT_STATE_DISABLED
-            # if (self.application.allCard == 3):
-            #     self.forth_button['state'] = TEXT_STATE_DISABLED
+                self.sign[0] = 1
 
-            if (self.application.allCard == 2):
-                self.forth_button['state'] = TEXT_STATE_DISABLED
-                self.third_button['state'] = TEXT_STATE_DISABLED
-
-            if (self.application.allCard == 1):
-                self.forth_button['state'] = TEXT_STATE_DISABLED
-                self.third_button['state'] = TEXT_STATE_DISABLED
-                self.second_button['state'] = TEXT_STATE_DISABLED
-
-
-
-
+            howMany = abs(self.application.allCard - self.whatToBlock(self.sign))
+            for i in range(4-howMany):
+                for j in range(4):
+                    if (self.sign[j] == 0):
+                        if (j == 0):
+                            self.first_button['state'] = TEXT_STATE_DISABLED
+                            self.sign[0] = 1
+                        else:
+                            if (j == 1):
+                                self.second_button['state'] = TEXT_STATE_DISABLED
+                                self.sign[1] = 1
+                            else:
+                                if (j == 2):
+                                    self.third_button['state'] = TEXT_STATE_DISABLED
+                                    self.sign[2] = 1
+                                else:
+                                    if (j == 3):
+                                        self.forth_button['state'] = TEXT_STATE_DISABLED
+                                        self.sign[3] = 1
+                                    break
+                                break
+                            break
+                        break
 
         if (self.application.loser == True):
             self.application.loser = False
@@ -262,9 +247,7 @@ class EzChatUI(object):
             self.second_button['state'] = TEXT_STATE_DISABLED
             self.first_button['state'] = TEXT_STATE_DISABLED
 
-
     def againCheck(self):
-
         self.repeat_button.pack(side=tkinter.LEFT, padx=10, pady=10)  # размещение кнопки на платформе
 
     def repeat(self):
@@ -286,8 +269,7 @@ class EzChatUI(object):
         self.isButton2 = False
         self.isButton3 = False
         self.isButton4 = False
-
-
+        self.sign = [0, 0, 0, 0]
 
     def show_message_final(self, message):
         self.message_list.configure(state=TEXT_STATE_NORMAL)  # вывод сообщения

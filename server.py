@@ -56,13 +56,12 @@ class Server(object):
                 print(CONNECTION_ABORTED)
                 return
 
-
-            mes = modell.Message(username=message.username, message=str(message.message),countClients =  self.countClients,startcard = "0",)
+            mes = modell.Message(username=message.username, message=str(message.message),countClients =  self.countClients,startcard = "0")
             try:
                 for client2 in self.clients:
                     if (client2 != client):
                         if (message.message == END_GAME):
-                            mes = modell.Message(username=message.username, message=END_GAME,countClients =  self.countClients,startcard = "0",)
+                            mes = modell.Message(username=message.username, message=END_GAME,countClients =  self.countClients,startcard = "0")
                             self.senfFor(mes, client2)
                         else:
                             self.senfFor(mes, client2)
@@ -90,7 +89,7 @@ class Server(object):
 
     def run(self):
         print(RUNNING)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # создание сокета
+        self.sock = socket.socket()  # создание сокета
         self.sock.bind(("", 9092))  # привязать сокет к хосту и порту
         self.listen_thread = threading.Thread(target=self.listen)  # поток для прослушивания target - это
         # вызываемый объект, который вызывается методом run ()
