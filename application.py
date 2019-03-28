@@ -10,7 +10,7 @@ BUFFER_SIZE = 2 ** 10
 
 
 class Application(object):
-    instance = None
+
     def __init__(self):
         self.closing = False
         self.host = None
@@ -25,7 +25,6 @@ class Application(object):
         self.startcard = 0
         self.winner = False
         self.loser = False
-        Application.instance = self
         self.countClients = 1
 
     def getCountOut(self):
@@ -55,7 +54,6 @@ class Application(object):
                 message = modell.Message(**json.loads(self.receive_all()))
                 self.countClients = int(message.countClients)
                 self.startcard = int(message.startcard)
-
 
                 if ((message.message) == messagess.END_GAME):
                     mes = modell.Message(username="Бог Судья ",
@@ -103,8 +101,6 @@ class Application(object):
                     mes = modell.Message(username="Бог Судья ",
                                          message=" Играем")
 
-
-
             except (ConnectionAbortedError, ConnectionResetError):
                 if not self.closing:
                     self.ui.alert(messagess.ERROR, messagess.CONNECTION_ERROR)
@@ -115,10 +111,10 @@ class Application(object):
         buffer = ""
         while not buffer.endswith(modell.END_CHARACTER):
             buffer += self.sock.recv(BUFFER_SIZE).decode(modell.TARGET_ENCODING)
+
         return buffer[:-1]
 
     def send_end(self):
-
         message = modell.Message(username=self.username, message=messagess.END_GAME, quit=True)
         try:
             self.sock.sendall(message.marshal())

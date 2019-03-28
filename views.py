@@ -29,10 +29,7 @@ class EzChatUI(object):
         self.forth_button = None
         self.exit_button = None
         self.repeat_button = None
-        self.r1 = None
-        self.r2 = None
-        self.r3 = None
-        self.r4 = None
+
         self.text = [random.randint(-4, -1) for i in range(4)]
         self.isButton1 = False
         self.isButton2 = False

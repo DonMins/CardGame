@@ -18,4 +18,5 @@ class Message(object):
          return MESSAGE_PATTERN.format(**self.__dict__)
 
     def marshal(self):
-        return (json.dumps(self.__dict__) +   END_CHARACTER).encode(TARGET_ENCODING) #кодирование
+        return (json.dumps(self.__dict__) +   END_CHARACTER).encode(TARGET_ENCODING) #сериализует self.__dict__
+        # в строку JSON-формата.
