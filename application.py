@@ -124,8 +124,11 @@ class Application(object):
 
     def send(self):
         message = self.ui.message.get()
-        if(self.allCard >4):
-            self.ui.updateButton()
+        if(self.allCard >=4):
+            # self.ui.updateButton()
+            self.ui.hill()
+
+
         self.allCard = self.allCard - 1
         self.cardRival = self.cardRival + int(message)
         self.ui.message.set("")
