@@ -30,8 +30,7 @@ class EzChatUI(object):
         self.exit_button = None
         self.repeat_button = None
 
-        # self.text = [random.randint(-4, -1) for i in range(4)]
-        self.text = [-4,-3,-2,-1]
+        self.text = [random.randint(-4, -1) for i in range(4)]
 
         self.isButton1 = False
         self.isButton2 = False
@@ -177,9 +176,9 @@ class EzChatUI(object):
         self.application.cardRival = self.application.cardRival-1
 
         coontOut = abs(self.application.getCountOut())
-        # if (self.application.allCard > 4):
-        #     for i in range(coontOut):
-        #         self.text[i] = random.randint(-4, -1)
+        if (self.application.allCard > 4):
+            for i in range(coontOut):
+                self.text[i] = random.randint(-4, -1)
 
         self.forth_button['text'] = str(self.text[3])
         self.third_button['text'] = str(self.text[2])
@@ -210,8 +209,7 @@ class EzChatUI(object):
             print("we are here",self.application.allCard )
 
             howMany = abs(self.application.allCard - self.whatToBlock(self.sign))
-            print("howMany",howMany)
-            print("block",self.sign)
+
 
             if(howMany==1):
                 r=2-howMany
@@ -239,8 +237,6 @@ class EzChatUI(object):
                                 break
                             break
                         break
-
-            print("block2", self.sign)
 
 
 
